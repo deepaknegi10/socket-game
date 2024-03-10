@@ -1,0 +1,20 @@
+[
+  {
+    "id": "d2726a4a",
+    "name": "Room Berlin CPU",
+    "owner": "I0yZ-jSTAGV8xTNkAAAD",
+    "type": "cpu"
+  },
+  {
+    "id": "aa0c86fa",
+    "name": "Room Izmir CPU",
+    "owner": "lqcflVIEANZWYkmAAAAC",
+    "type": "cpu"
+  },
+  {
+    "id": "aa0c54fa",
+    "name": "Room Amsterdam",
+    "owner": "lqcflVIEANZWYkmAAADD",
+    "type": "human"
+  }
+]

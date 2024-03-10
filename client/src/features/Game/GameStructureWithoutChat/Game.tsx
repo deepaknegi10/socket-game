@@ -7,7 +7,6 @@ import { GamePanel } from "../GameChat/GamePanel"
 import GameRoomHeader from "./GameRoomHeader"
 import GameRoomFooter from "./GameRoomFooter"
 import type { IRoomData } from "../../types"
-// import useLocalStorage from "../../hooks/useLocalStorage"
 
 function useQuery() {
   const { search } = useLocation()
