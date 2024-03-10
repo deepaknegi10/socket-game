@@ -30,7 +30,10 @@ function App() {
               />
             }
           />
-          <Route path="/game" element={<Game />} />
+          <Route
+            path="/game"
+            element={<Game socket={socket} roomData={data} error={error} />}
+          />
           <Route
             path="/"
             element={
