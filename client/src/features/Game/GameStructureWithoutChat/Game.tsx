@@ -2,9 +2,9 @@ import * as React from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { AiOutlineLogout } from "react-icons/ai"
 import { toast } from "react-toastify"
-import { BsChevronRight } from "react-icons/bs"
-import type { IRoomData } from "../types"
-import { Icon } from "../../assets/icon"
+import GameRooms from "./GameRooms"
+import GameRoomHeader from "./GameRoomHeader"
+import type { IRoomData } from "../../types"
 
 function useQuery() {
   const { search } = useLocation()
@@ -100,22 +100,7 @@ function Game({
 
   return (
     <div className="flex flex-col items-center justify-center h-screen w-full bg-[#F8F5F2]">
-      <header
-        id="header"
-        className="flex h-[72px] w-full items-center bg-[#FF8000] absolute top-0"
-      >
-        <div className="px-0 pl-4 pr-4">
-          <Icon />
-        </div>
-        <div className="flex flex-col">
-          <div className="font-bold text-lg leading-20 text-white">
-            Scoober team
-          </div>
-          <div className="font-normal text-base leading-24 text-white">
-            Win the game or win the job
-          </div>
-        </div>
-      </header>
+      <GameRoomHeader />
 
       <div
         style={{ height: "calc(100% - 144px)" }}
@@ -129,23 +114,10 @@ function Game({
             <div className="text-red-500 text-sm">{error?.message}</div>
           ) : (
             <div>
-              <div>
-                {roomData?.map((room) => {
-                  return (
-                    <div
-                      key={room.id}
-                      className="p-6 bg-white h-[72px] mb-0.5 font-bold text-sm text-[#205A6D] flex justify-between items-center cursor-pointer"
-                      onClick={() => {
-                        // We should clear the gamePlay state once room other than current clicked
-                        handleRoomClick(room.id)
-                      }}
-                    >
-                      {room.name}
-                      <BsChevronRight />
-                    </div>
-                  )
-                })}
-              </div>
+              <GameRooms
+                roomData={roomData}
+                handleRoomClick={handleRoomClick}
+              />
               <div className="p-6 bg-white h-[72px] font-bold text-sm text-[#205A6D] flex justify-between items-center absolute left-0 bottom-[72px] w-1/3">
                 <div id="user-id" className="cursor-default">
                   <div>User Name: {myName}</div>
@@ -163,6 +135,12 @@ function Game({
               </div>
             </div>
           )}
+        </div>
+        <div
+          id="chat-side"
+          className="w-2/3 bg-white mr-6 p-6 h-full overflow-y-scroll"
+        >
+          Game Panel
         </div>
       </div>
       <div
