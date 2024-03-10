@@ -4,6 +4,7 @@ import { AiOutlineLogout } from "react-icons/ai"
 import { toast } from "react-toastify"
 import GameRooms from "./GameRooms"
 import GameRoomHeader from "./GameRoomHeader"
+import GameRoomFooter from "./GameRoomFooter"
 import type { IRoomData } from "../../types"
 
 function useQuery() {
@@ -143,10 +144,7 @@ function Game({
           Game Panel
         </div>
       </div>
-      <div
-        id="footer"
-        className="h-[72px] bg-[#0a3847] absolute bottom-0 w-full flex"
-      ></div>
+      <GameRoomFooter />
     </div>
   )
 }
