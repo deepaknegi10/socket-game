@@ -3,9 +3,11 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { AiOutlineLogout } from "react-icons/ai"
 import { toast } from "react-toastify"
 import GameRooms from "./GameRooms"
+import { GamePanel } from "../GameChat/GamePanel"
 import GameRoomHeader from "./GameRoomHeader"
 import GameRoomFooter from "./GameRoomFooter"
 import type { IRoomData } from "../../types"
+// import useLocalStorage from "../../hooks/useLocalStorage"
 
 function useQuery() {
   const { search } = useLocation()
@@ -102,7 +104,6 @@ function Game({
   return (
     <div className="flex flex-col items-center justify-center h-screen w-full bg-[#F8F5F2]">
       <GameRoomHeader />
-
       <div
         style={{ height: "calc(100% - 144px)" }}
         className="bg-[#F8F5F2] w-full flex "
@@ -141,7 +142,7 @@ function Game({
           id="chat-side"
           className="w-2/3 bg-white mr-6 p-6 h-full overflow-y-scroll"
         >
-          Game Panel
+          <GamePanel socket={socket} room={room} />
         </div>
       </div>
       <GameRoomFooter />

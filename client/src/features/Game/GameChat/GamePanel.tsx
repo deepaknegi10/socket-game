@@ -1,7 +1,10 @@
 import React from "react"
 import { toast } from "react-toastify"
-import { GameState, GAME_OPTION } from "../types"
-import { Icon, Player } from "../../../assets"
+import { GamePlayItem } from "./GamePlayItem"
+import { GameChatBodyHeader } from "./GameChatBodyHeader"
+import { GameState, GAME_OPTION, TEXT_ALIGN } from "../types"
+import GameOverlay from "./GameOverlay"
+import OptionComponent from "./OptionsComponent"
 
 interface IGamePanel {
   socket: any
@@ -10,7 +13,6 @@ interface IGamePanel {
     roomType: string
     roomName: string
   }
-  numOfUsers: number
 }
 
 interface IGamePlayItem {
@@ -22,20 +24,24 @@ interface IGamePlayItem {
   isCorrectResult?: boolean
 }
 
-function GamePanel({ socket, room, numOfUsers }: IGamePanel) {
+function GamePanel({ socket, room }: IGamePanel) {
   const [gamePlay, setGamePlay] = React.useState<IGamePlayItem[]>([])
   const [gameState, setGameState] = React.useState<GameState>()
+  const [gameOver, setGameOver] = React.useState<{
+    winner: string
+    isOver: boolean
+  }>()
   const [currentUser, setCurrentUser] = React.useState<string>()
   const [numberSelected, setNumberSelected] = React.useState<GAME_OPTION>()
-  const [randomNumber, setRandomNumber] = React.useState<number>()
   const myName = localStorage.getItem("userName")
   const myId = localStorage.getItem("userId")
+  const [randomNumber, setRandomNumber] = React.useState<number>()
 
   React.useEffect(() => {
     console.log("onReady received")
     socket.on("onReady", ({ state }: { state: boolean }) => {
       console.log("state", state, "letsPlay triggered")
-      // if (state) socket.emit("letsPlay")
+      if (state) socket.emit("letsPlay")
     })
   }, [numberSelected, socket])
 
@@ -49,7 +55,12 @@ function GamePanel({ socket, room, numOfUsers }: IGamePanel) {
     }
   )
 
-  socket.on("gameOver", console.log("Game Over"))
+  socket.on(
+    "gameOver",
+    ({ user, isOver }: { user: string; isOver: boolean }) => {
+      setGameOver({ winner: user, isOver })
+    }
+  )
 
   React.useEffect(() => {
     socket.on(
@@ -72,26 +83,24 @@ function GamePanel({ socket, room, numOfUsers }: IGamePanel) {
         console.log(number, isFirst, user, selectedNumber, isCorrectResult)
         console.log("********")
 
-        // if (!isFirst) {
-        // const previousNumber = isCorrectResult
-        //   ? Math.ceil(number) * 3 - selectedNumber
-        //   : number
-        // console.log("previousNumber", previousNumber)
+        if (!isFirst) {
+          const previousNumber = isCorrectResult
+            ? Math.ceil(number) * 3 - selectedNumber
+            : number
+          console.log("previousNumber", previousNumber)
 
-        setGamePlay((gamePlay) => [
-          ...gamePlay,
-          {
-            number,
-            isFirst,
-            user,
-            selectedNumber,
-            isCorrectResult,
-            previousNumber,
-          },
-        ])
-        // }
-
-        // }
+          setGamePlay((gamePlay) => [
+            ...gamePlay,
+            {
+              number,
+              isFirst,
+              user,
+              selectedNumber,
+              isCorrectResult,
+              previousNumber,
+            },
+          ])
+        }
       }
     )
   }, [socket])
@@ -109,88 +118,46 @@ function GamePanel({ socket, room, numOfUsers }: IGamePanel) {
     }
   }
 
+  const handleNewGameClick = React.useCallback(() => {
+    // reset the states
+    setGamePlay([])
+    setGameOver({ winner: "", isOver: false })
+    socket.emit("letsPlay")
+  }, [socket])
+
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
-        {room.roomName ? (
-          <div className="flex items-start">
-            <span className="font-bold text-sm leading-6 text-[#205A6D] mr-2">
-              You are in room:{" "}
-            </span>
-            <span className="font-bold text-lg text-[#205A6D]">
-              {room.roomName}
-            </span>
-          </div>
-        ) : null}
-        {randomNumber && gamePlay.length === 0 ? (
-          <div className="flex items-start">
-            <span className="font-bold text-sm leading-6	text-[#205A6D] mr-2">
-              Initial Ramdom Number:
-            </span>
-            <span className="font-bold text-sm leading-6 text-[#205A6D]">
-              {randomNumber}
-            </span>
-          </div>
-        ) : null}
-      </div>
-      <button>Lets Play!</button>
+      <GameChatBodyHeader
+        room={room}
+        randomNumber={randomNumber}
+        length={gamePlay.length}
+      />
+      <GameOverlay
+        handleNewGameClick={handleNewGameClick}
+        gameOver={gameOver}
+        setGameOver={setGameOver}
+      />
       <div>
         {gamePlay.map((num, i) => {
           return (
             <div key={`${num.number}_${i}`}>
-              <div>
-                {num.user === myName ? (
-                  <div className="flex mb-4">
-                    <Icon />
-                    <div className="flex flex-col justify-start ml-4">
-                      <div className="mb-2 w-16 h-16 rounded-full shadow-lg border-1 border-black flex items-center justify-center bg-[#205A6D] text-white font-bold text-2xl">
-                        {numberSelected}
-                      </div>
-                      <div className="mb-2 py-1 px-3 bg-[#F8F5F2] w-full text-[#454649] font-normal text-sm	leading-6">{`[ ( ${numberSelected} + ${num.previousNumber} ) / 3 ]`}</div>
-                      <div className="mb-2 py-1 px-3 bg-[#F8F5F2] w-full text-left text-[#454649] font-normal text-sm	leading-6">
-                        {(num.selectedNumber + num.previousNumber) / 3}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex mb-4 justify-end">
-                    <div className="flex flex-col justify-end items-end mr-4">
-                      <div className="mb-2 w-16 h-16 rounded-full shadow-lg border-1 border-black flex items-center justify-center bg-[#1574F5] text-white font-bold text-2xl">
-                        {numberSelected}
-                      </div>
-                      <div className="mb-2 py-1 px-3 bg-[#F8F5F2] w-full text-[#454649] font-normal text-sm	leading-6">{`[ ( ${numberSelected} + ${num.previousNumber} ) / 3 ]`}</div>
-                      <div className="mb-2 py-1 px-3 bg-[#F8F5F2] w-full text-right text-[#454649] font-normal text-sm	leading-6">
-                        {(num.selectedNumber + num.previousNumber) / 3}
-                      </div>
-                    </div>
-                    <Player />
-                  </div>
-                )}
-              </div>
+              <GamePlayItem
+                textAlign={
+                  num.user === myName ? TEXT_ALIGN.LEFT : TEXT_ALIGN.RIGHT
+                }
+                numberSelected={num.selectedNumber}
+                number={num.previousNumber}
+              />
             </div>
           )
         })}
       </div>
 
-      <>
-        {!(gameState === GameState.WAIT && myId === currentUser) ? (
-          <div className="flex direction-column w-full items-center justify-around">
-            <>
-              {[-1, 0, 1].map((num) => {
-                return (
-                  <div
-                    key={num}
-                    className="w-16 h-16 rounded-full shadow border border-black flex items-center justify-center mt-4 cursor-pointer font-bold"
-                    onClick={() => handleNumberSelection(num)}
-                  >
-                    <span className="text-[#1574F5]">{num}</span>
-                  </div>
-                )
-              })}
-            </>
-          </div>
-        ) : null}
-      </>
+      <OptionComponent // to show [-1, 0, 1]
+        gameState={gameState}
+        currentUser={currentUser}
+        handleNumberSelection={handleNumberSelection}
+      />
     </>
   )
 }

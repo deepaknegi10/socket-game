@@ -1,7 +1,7 @@
 import React from "react"
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
 import Login from "./features/Login"
-import Game from "./features/Game"
+import { Game } from "./features/Game"
 import { useFetch } from "./hooks/useFetch"
 import type { IRoomData } from "./features/types"
 import "./App.css"

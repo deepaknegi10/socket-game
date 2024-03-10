@@ -15,9 +15,10 @@ enum GameState {
 }
 
 io.on("connection", (socket) => {
-  socket.on("login", ({ username }) => {
+  console.log("socket", socket.id)
+  socket.on("login", ({ username, room }) => {
     apiService
-      .createUser(socket.id, username)
+      .createUser(socket.id, username, room)
       .then(() => {
         socket.emit("message", {
           user: username,
@@ -31,25 +32,27 @@ io.on("connection", (socket) => {
   })
 
   /* Join to the room */
-  socket.on("joinRoom", ({ username, room, roomType }) => {
+  socket.on("joinRoom", ({ username, room, roomType, roomName }) => {
     apiService
       .assignRoom(room, socket.id, roomType)
       .then(() => {
         socket.emit("message", {
           user: username,
-          message: `welcome to room ${room}`,
+          message: `Welcome to room ${roomName}`,
           room: room,
         })
+        console.log("room, roomType, roomName", room, roomType, roomName)
         if (roomType !== "cpu") {
           socket.broadcast.to(room).emit("message", {
             user: username,
-            message: `has joined ${room}`,
+            message: `${username} has joined ${roomName}`,
             room: room,
           })
         }
 
         /* Check the room with how many socket is connected */
         const maxRoomSize = roomType === "cpu" ? 1 : 2
+        console.log("io.nsps[' /'].adapter", io.nsps["/"].adapter.rooms)
         socket.join(room, () => {
           if (
             io.nsps["/"].adapter.rooms[room] &&
@@ -70,10 +73,11 @@ io.on("connection", (socket) => {
       .getUserDetail(socket.id)
       .then((result) => {
         io.to(result?.data.room).emit("randomNumber", {
-          number: `${apiService.createRandomNumber(1999, 9999)}`,
+          number: `${apiService.createRandomNumber(10, 99)}`,
           isFirst: true,
         })
 
+        console.log("Play", io.nsps["/"].adapter.rooms[result?.data.room])
         socket.broadcast.emit("activateYourTurn", {
           user: io.nsps["/"].adapter.rooms[result?.data.room]
             ? Object.keys(
@@ -108,7 +112,6 @@ io.on("connection", (socket) => {
       }
 
       const lastResult = calculationResult(numbers, number)
-
       // When the second oponnent is a CPU
       if (result?.data?.roomType === "cpu") {
         // After clients selection it will wait 2 seconds for the CPU selection
@@ -121,12 +124,13 @@ io.on("connection", (socket) => {
             ]
           const combinedNumbers = [randomCPU, lastResult]
           const CPUResult = calculationResult(combinedNumbers, lastResult)
+
           io.to(result?.data.room).emit("randomNumber", {
             number: calculationResult(combinedNumbers, lastResult),
             isFirst: false,
             user: "CPU",
-            selectedNumber: randomCPU,
             previousNumber: number,
+            selectedNumber: randomCPU,
             isCorrectResult: CPUResult == lastResult ? false : true,
           })
 
@@ -143,14 +147,15 @@ io.on("connection", (socket) => {
           }
         }, 2000)
       }
+
+      console.log(number, selectedNumber, lastResult == number)
       io.to(result?.data.room).emit("randomNumber", {
-        number: calculationResult(numbers, number),
+        number: lastResult,
         isFirst: false,
         user: result?.data.name,
         selectedNumber: selectedNumber,
         previousNumber: number,
-        isCorrectResult:
-          calculationResult(numbers, number) == number ? false : true,
+        isCorrectResult: lastResult == number ? false : true,
       })
 
       io.to(result?.data.room).emit("activateYourTurn", {
@@ -159,7 +164,7 @@ io.on("connection", (socket) => {
       })
 
       /* if 1 is reached than emit the GameOver Listener */
-      if (calculationResult(numbers, number) == 1) {
+      if (lastResult == 1) {
         io.to(result?.data.room).emit("gameOver", {
           user: result?.data.name,
           isOver: true,

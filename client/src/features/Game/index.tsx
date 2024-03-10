@@ -1,1 +1,1 @@
-export { default } from "./GameStructureWithoutChat/Game"
+export { default as Game } from "./GameStructureWithoutChat/Game"

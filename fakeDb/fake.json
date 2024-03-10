@@ -19,5 +19,17 @@
       "type": "human"
     }
   ],
-  "users": []
+  "users": [
+    {
+      "id": "gQGjUhEfM4Zu9KR0AAAB",
+      "name": "deepak",
+      "room": "aa0c54fa"
+    },
+    {
+      "id": "fmZLVItrR_XubpdqAAAA",
+      "name": "emmanuel",
+      "room": "aa0c54fa",
+      "roomType": "human"
+    }
+  ]
 }
