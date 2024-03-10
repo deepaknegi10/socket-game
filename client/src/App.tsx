@@ -2,6 +2,7 @@ import React from "react"
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
 import Login from "./features/Login"
 import { Game } from "./features/Game"
+import { ToastContainer } from "react-toastify"
 import { useFetch } from "./hooks/useFetch"
 import type { IRoomData } from "./features/types"
 import "./App.css"
@@ -47,6 +48,18 @@ function App() {
           />
         </Routes>
       </Router>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </>
   )
 }

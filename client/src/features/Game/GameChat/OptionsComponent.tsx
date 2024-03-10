@@ -24,6 +24,7 @@ function OptionsComponent({
                 <div
                   key={num}
                   className="w-16 h-16 rounded-full shadow border border-black flex items-center justify-center mt-4 cursor-pointer font-bold"
+                  data-testid={`test-id-${num}`}
                   onClick={() => handleNumberSelection(num)}
                 >
                   <span className="text-[#1574F5]">{num}</span>
