@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
           message: `Welcome to room ${roomName}`,
           room: room,
         })
-        console.log("room, roomType, roomName", room, roomType, roomName)
+
         if (roomType !== "cpu") {
           socket.broadcast.to(room).emit("message", {
             user: username,
@@ -52,13 +52,13 @@ io.on("connection", (socket) => {
 
         /* Check the room with how many socket is connected */
         const maxRoomSize = roomType === "cpu" ? 1 : 2
-        console.log("io.nsps[' /'].adapter", io.nsps["/"].adapter.rooms)
+
         socket.join(room, () => {
           if (
             io.nsps["/"].adapter.rooms[room] &&
             io.nsps["/"].adapter.rooms[room]?.length === maxRoomSize
           ) {
-            io.to(room).emit("onReady", { state: true })
+            io.to(room).emit("onReady", { state: true, user: username })
           }
         })
       })
@@ -77,7 +77,6 @@ io.on("connection", (socket) => {
           isFirst: true,
         })
 
-        console.log("Play", io.nsps["/"].adapter.rooms[result?.data.room])
         socket.broadcast.emit("activateYourTurn", {
           user: io.nsps["/"].adapter.rooms[result?.data.room]
             ? Object.keys(
@@ -126,7 +125,7 @@ io.on("connection", (socket) => {
           const CPUResult = calculationResult(combinedNumbers, lastResult)
 
           io.to(result?.data.room).emit("randomNumber", {
-            number: calculationResult(combinedNumbers, lastResult),
+            number: CPUResult,
             isFirst: false,
             user: "CPU",
             previousNumber: number,
@@ -139,7 +138,7 @@ io.on("connection", (socket) => {
             state: GameState.PLAY,
           })
 
-          if (calculationResult(combinedNumbers, lastResult) === 1) {
+          if (CPUResult === 1) {
             io.to(result?.data.room).emit("gameOver", {
               user: "CPU",
               isOver: true,
@@ -148,7 +147,6 @@ io.on("connection", (socket) => {
         }, 2000)
       }
 
-      console.log(number, selectedNumber, lastResult == number)
       io.to(result?.data.room).emit("randomNumber", {
         number: lastResult,
         isFirst: false,

@@ -114,7 +114,7 @@ function Win() {
             width="40.5756"
             height="60.9165"
             filterUnits="userSpaceOnUse"
-            colorInterpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
             <feFlood floodOpacity="0" result="BackgroundImageFix" />
             <feBlend
@@ -148,7 +148,7 @@ function Win() {
             width="91.5227"
             height="116.669"
             filterUnits="userSpaceOnUse"
-            colorInterpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
             <feFlood floodOpacity="0" result="BackgroundImageFix" />
             <feBlend

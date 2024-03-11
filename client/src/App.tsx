@@ -5,16 +5,16 @@ import { Game } from "./features/Game"
 import { ToastContainer } from "react-toastify"
 import { useFetch } from "./hooks/useFetch"
 import type { IRoomData } from "./features/types"
+import { SOCKET_URL, HOST_URL } from "./constants"
 import "./App.css"
 
+const roomUrl = `${HOST_URL}/rooms`
 const io = require("socket.io-client/dist/socket.io")
-const socket = io.connect("http://localhost:8082")
+const socket = io.connect(SOCKET_URL)
 socket.connect()
 
 function App() {
-  const { data, error, loading } = useFetch<IRoomData[] | null>(
-    "http://localhost:3004/rooms"
-  )
+  const { data, error, loading } = useFetch<IRoomData[] | null>(roomUrl)
 
   return (
     <>

@@ -38,29 +38,38 @@ function GamePanel({ socket, room }: IGamePanel) {
   const [randomNumber, setRandomNumber] = React.useState<number>()
 
   React.useEffect(() => {
-    console.log("onReady received")
-    socket.on("onReady", ({ state }: { state: boolean }) => {
-      console.log("state", state, "letsPlay triggered")
-      if (state) socket.emit("letsPlay")
-    })
-  }, [numberSelected, socket])
+    socket.on(
+      "onReady",
+      ({ state, user }: { state: boolean; user: string }) => {
+        if (user !== myId) {
+          setCurrentUser(user)
+        }
+        if (state) socket.emit("letsPlay")
+      }
+    )
+  }, [myId, numberSelected, socket])
 
-  socket.on(
-    "activateYourTurn",
-    ({ user, state }: { user: string; state: GameState }) => {
-      if (state === GameState.PLAY && user === myId && myName)
-        toast(`${myName} please play!`)
-      setCurrentUser(user)
-      setGameState(state)
-    }
-  )
+  React.useEffect(() => {
+    socket.on(
+      "activateYourTurn",
+      ({ user, state }: { user: string; state: GameState }) => {
+        if (state === GameState.PLAY && user === myId && myName) {
+          toast(`${myName} please play!`)
+        }
+        setCurrentUser(user)
+        setGameState(state)
+      }
+    )
+  }, [myId, myName, numberSelected, socket])
 
-  socket.on(
-    "gameOver",
-    ({ user, isOver }: { user: string; isOver: boolean }) => {
-      setGameOver({ winner: user, isOver })
-    }
-  )
+  React.useEffect(() => {
+    socket.on(
+      "gameOver",
+      ({ user, isOver }: { user: string; isOver: boolean }) => {
+        setGameOver({ winner: user, isOver })
+      }
+    )
+  }, [socket])
 
   React.useEffect(() => {
     socket.on(
@@ -79,16 +88,7 @@ function GamePanel({ socket, room }: IGamePanel) {
           toast("Please play according to original number!")
         }
 
-        console.log("********")
-        console.log(number, isFirst, user, selectedNumber, isCorrectResult)
-        console.log("********")
-
         if (!isFirst) {
-          const previousNumber = isCorrectResult
-            ? Math.ceil(number) * 3 - selectedNumber
-            : number
-          console.log("previousNumber", previousNumber)
-
           setGamePlay((gamePlay) => [
             ...gamePlay,
             {

@@ -28,7 +28,6 @@ function Game({
   const roomId = query.get("roomId")
   const roomType = query.get("roomType")
   const roomName = query.get("roomName")
-  const myName = localStorage.getItem("userName")
 
   const [userId, setUserId] = React.useState<string>()
 
@@ -121,7 +120,6 @@ function Game({
               />
               <div className="p-6 bg-white h-[72px] font-bold text-sm text-[#205A6D] flex justify-between items-center absolute left-0 bottom-[72px] w-1/3">
                 <div id="user-id" className="cursor-default">
-                  <div>User Name: {myName}</div>
                   <div>User ID: {userId}</div>
                 </div>{" "}
                 <div

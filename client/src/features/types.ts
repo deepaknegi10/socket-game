@@ -5,4 +5,11 @@ interface IRoomData {
   type: string
 }
 
-export type { IRoomData }
+interface IUserData {
+  id: string
+  name: string
+  room: string
+  roomType: string
+}
+
+export type { IRoomData, IUserData }
