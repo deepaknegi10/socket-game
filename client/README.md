@@ -21,3 +21,4 @@ We were asked to use server optionally, so I have made a few small changes:
 
 #### At the client
 - I have not used implemented the state using redux due to lack of personal time. I really wanted to do was to have a state => Socket, users and rooms and use it whenever needed.
+- I used the same socket-io lib. version (old) as server. So, FE also has to use the same version to match the api. Types were not defined back then, I couldn't use Socket type.
